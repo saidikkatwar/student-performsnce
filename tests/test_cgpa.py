@@ -24,7 +24,12 @@ def test_calculate_cgpa_across_semesters():
     semester_1 = [(4, 9), (4, 8)]
     semester_2 = [(2, 7), (2, 9)]
 
-    assert calculate_cgpa([semester_1, semester_2]) == 8.25
+    assert calculate_cgpa([semester_1, semester_2]) == 8.33
+
+
+def test_calculate_cgpa_rejects_invalid_semester_shape():
+    with pytest.raises(ValueError):
+        calculate_cgpa([[1, 2], [(3, 8)]])
 
 
 def test_reject_empty_subjects():
@@ -47,9 +52,24 @@ def test_reject_nan_grade_points():
         calculate_sgpa([(3, float("nan"))])
 
 
+def test_reject_non_finite_credits():
+    with pytest.raises(ValueError):
+        calculate_sgpa([(float("inf"), 8)])
+
+
 def test_reject_empty_student_name():
     with pytest.raises(ValueError):
         validate_student("MTECH001", " ")
+
+
+def test_reject_empty_roll_number():
+    with pytest.raises(ValueError):
+        validate_student("   ", "Rahul Sharma")
+
+
+def test_reject_non_string_student_fields():
+    with pytest.raises(ValueError):
+        validate_student(None, "Rahul Sharma")
 
 
 def test_performance_category():
@@ -58,3 +78,8 @@ def test_performance_category():
     assert performance_category(7.2) == "Good"
     assert performance_category(6.3) == "Satisfactory"
     assert performance_category(5.5) == "Needs Improvement"
+
+
+def test_performance_category_rejects_non_finite_values():
+    with pytest.raises(ValueError):
+        performance_category(float("nan"))
